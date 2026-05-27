@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB STORE - JASTEB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#000;--card:rgba(255,255,255,0.04);--card-h:rgba(255,255,255,0.08);
+            --accent:#6366f1;--accent-l:#818cf8;--accent-g:rgba(99,102,241,0.3);
+            --cyan:#22d3ee;--cyan-g:rgba(34,211,238,0.2);
+            --t1:#fff;--t2:rgba(255,255,255,0.6);--t3:rgba(255,255,255,0.4);
+            --bdr:rgba(255,255,255,0.08);--bdr-h:rgba(255,255,255,0.2);
+            --ok:#34d399;--err:#f87171;
+            --bubble-me:#6366f1;--bubble-them:rgba(255,255,255,0.08);
+        }
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none}
+        .bg-g1{position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,var(--accent-g),transparent 70%);filter:blur(80px);z-index:0;pointer-events:none;animation:pg 8s ease-in-out infinite}
+        .bg-g2{position:fixed;bottom:-200px;left:-200px;width:500px;height:500px;background:radial-gradient(circle,var(--cyan-g),transparent 70%);filter:blur(100px);z-index:0;pointer-events:none;animation:pg 10s ease-in-out infinite 2s}
+        @keyframes pg{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.7;transform:scale(1.1)}}
+        .noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+        .app{position:relative;z-index:2;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+        .header{padding:20px 20px 10px;text-align:center;position:sticky;top:0;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);z-index:100}
+        .htitle{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:linear-gradient(135deg,#fff 0%,var(--accent-l) 50%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hsub{font-size:11px;color:var(--t3);letter-spacing:.2em;text-transform:uppercase;margin-top:4px}
+        .page{display:none;flex-direction:column;padding:20px;padding-bottom:100px;flex:1}.page.active{display:flex}
+        .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+        .mcard{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+        .mcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-g),transparent 60%);opacity:0;transition:opacity .3s}
+        .mcard:hover{border-color:var(--bdr-h);background:var(--card-h);transform:translateY(-2px)}.mcard:hover::before{opacity:1}.mcard:active{transform:scale(.97)}
+        .micon{font-size:32px;margin-bottom:12px;position:relative;z-index:1}
+        .mlabel{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t1);position:relative;z-index:1}
+        .mcard.wide{grid-column:1/-1}.mcard.wide .mlabel{font-size:14px}
+        .stitle{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;margin-top:28px}
+        .ssub{font-size:12px;color:var(--t3);margin-bottom:16px}
+        .igroup{margin-bottom:16px}
+        .ilabel{font-size:11px;font-weight:500;color:var(--t2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block}
+        .ifield{width:100%;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);border-radius:12px;color:var(--t1);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .3s}
+        .ifield:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-g);background:rgba(255,255,255,.06)}
+        .ifield::placeholder{color:var(--t3)}
+        textarea.ifield{resize:vertical;min-height:100px}
+        .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+        .pcard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+        .pcard:hover{border-color:var(--accent);background:var(--card-h)}
+        .pcard.sel{border-color:var(--accent);background:rgba(99,102,241,.1);box-shadow:0 0 20px var(--accent-g)}
+        .pcard.sel::after{content:'✓';position:absolute;top:8px;right:10px;width:20px;height:20px;background:var(--accent);border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+        .pname{font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+        .pprice{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--t1)}
+        .pcur{font-size:11px;color:var(--t3);margin-top:2px}
+        .sgrid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+        .scard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .3s;position:relative}
+        .scard:hover{border-color:var(--accent);background:var(--card-h)}
+        .scard.sel{border-color:var(--accent);background:rgba(99,102,241,.1);box-shadow:0 0 20px var(--accent-g)}
+        .scard.sel::after{content:'✓';position:absolute;right:16px;width:22px;height:22px;background:var(--accent);border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+        .sname{font-size:13px;font-weight:600;color:var(--t1)}
+        .sprice{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--cyan);margin-right:30px}
+        .obtn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;border-radius:14px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:20px;position:relative;overflow:hidden}
+        .obtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.15),transparent);transform:translateX(-100%);transition:transform .6s}
+        .obtn:hover::before{transform:translateX(100%)}.obtn:hover{box-shadow:0 0 30px var(--accent-g);transform:translateY(-2px)}.obtn:active{transform:scale(.98)}
+        .obtn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+        .bbtn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;padding:8px 0;transition:color .2s;background:none;border:none;font-family:'Inter',sans-serif;letter-spacing:.05em}
+        .bbtn:hover{color:var(--t1)}
+        .pov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fi .3s}
+        .pov.active{display:flex}
+        @keyframes fi{from{opacity:0}to{opacity:1}}
+        @keyframes su{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .pbox{background:#0a0a0a;border:1px solid var(--bdr);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;animation:su .4s;max-height:90vh;overflow-y:auto}
+        .ptitle{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-bottom:20px;color:var(--cyan)}
+        .qimg{width:100%;max-width:260px;border-radius:12px;margin:0 auto 16px;display:block;border:1px solid var(--bdr)}
+        .pinfo{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+        .prow{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+        .pmeth{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em}
+        .pnum{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);cursor:pointer;transition:color .2s}
+        .pnum:hover{color:var(--accent-l)}
+        .fup{border:2px dashed var(--bdr);border-radius:14px;padding:30px 20px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+        .fup:hover{border-color:var(--accent);background:rgba(99,102,241,.05)}
+        .fup.has{border-color:var(--ok);border-style:solid;background:rgba(52,211,153,.05)}
+        .fup-icon{font-size:28px;margin-bottom:8px}
+        .fup-txt{font-size:12px;color:var(--t3)}.fup-txt strong{color:var(--accent-l)}
+        .fup-name{font-size:12px;color:var(--ok);margin-top:8px;font-weight:500;word-break:break-all}
+        .fup-input{position:absolute;inset:0;opacity:0;cursor:pointer}
+        .sbtn{width:100%;padding:14px;background:linear-gradient(135deg,#22d3ee,#06b6d4);border:none;border-radius:12px;color:#000;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:16px}
+        .sbtn:hover{box-shadow:0 0 25px var(--cyan-g);transform:translateY(-1px)}.sbtn:active{transform:scale(.98)}
+        .sbtn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+        .divider{height:1px;background:var(--bdr);margin:20px 0}
+        .nflag{font-size:20px;margin-right:8px}.ninfo{display:flex;align-items:center}
+        .ncountry{font-size:13px;font-weight:600;color:var(--t1)}.ncode{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3)}
+        .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:8px}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#0a0a0a;border:1px solid var(--bdr);border-radius:12px;padding:14px 24px;z-index:2000;font-size:13px;font-weight:500;transition:transform .4s;display:flex;align-items:center;gap:10px;box-shadow:0 20px 40px rgba(0,0,0,.5);max-width:90vw}
+        .toast.show{transform:translateX(-50%) translateY(0)}.toast.ok{border-color:var(--ok)}.toast.ok .ti{color:var(--ok)}.toast.er{border-color:var(--err)}.toast.er .ti{color:var(--err)}.toast.inf{border-color:var(--accent)}.toast.inf .ti{color:var(--accent)}.ti{font-size:18px}
+        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+        /* ===== CHAT ROOM STYLES ===== */
+        .chat-page{padding:0!important;padding-bottom:0!important;display:none;flex-direction:column;height:100vh;height:100dvh}
+        .chat-page.active{display:flex}
+        .chat-header{padding:14px 16px;background:rgba(0,0,0,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;flex-shrink:0}
+        .chat-back{background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;padding:4px;transition:color .2s;line-height:1}
+        .chat-back:hover{color:var(--t1)}
+        .chat-hinfo{flex:1}
+        .chat-hname{font-size:14px;font-weight:600;color:var(--t1)}
+        .chat-hstatus{font-size:11px;color:var(--ok);display:flex;align-items:center;gap:4px}
+        .chat-hstatus .dot{width:6px;height:6px;background:var(--ok);border-radius:50%;animation:blink 2s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+        .chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:4px}
+        .chat-msg{max-width:82%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word;animation:msgIn .3s ease}
+        @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .chat-msg.me{align-self:flex-end;background:var(--bubble-me);color:#fff;border-bottom-right-radius:4px}
+        .chat-msg.them{align-self:flex-start;background:var(--bubble-them);color:var(--t1);border-bottom-left-radius:4px}
+        .chat-msg .msg-name{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;opacity:.6}
+        .chat-msg.me .msg-name{color:rgba(255,255,255,.7)}
+        .chat-msg.them .msg-name{color:var(--accent-l)}
+        .chat-msg .msg-time{font-size:9px;opacity:.4;margin-top:4px;text-align:right}
+        .chat-msg.them .msg-time{text-align:left}
+        .chat-sys{align-self:center;font-size:10px;color:var(--t3);background:rgba(255,255,255,.04);padding:4px 14px;border-radius:20px;margin:8px 0;letter-spacing:.03em}
+        .chat-input-bar{padding:12px 16px;background:rgba(0,0,0,.9);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);display:flex;gap:10px;align-items:flex-end;flex-shrink:0}
+        .chat-input{flex:1;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:24px;color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:all .3s;max-height:100px;resize:none;line-height:1.4}
+        .chat-input:focus{border-color:var(--accent);background:rgba(255,255,255,.08)}
+        .chat-input::placeholder{color:var(--t3)}
+        .chat-send{width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+        .chat-send:hover{background:var(--accent-l);transform:scale(1.05)}
+        .chat-send:active{transform:scale(.95)}
+        .chat-send:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
+        .chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--t3);padding:40px;text-align:center}
+        .chat-empty-icon{font-size:48px;opacity:.3}
+        .chat-empty-text{font-size:13px}
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div><div class="bg-g1"></div><div class="bg-g2"></div><div class="noise"></div>
+
+<div class="toast" id="toast"><span class="ti">✓</span><span class="tm">Message</span></div>
+
+<div class="app">
+
+    <div class="header" id="main-header">
+        <div class="htitle">WEB STORE</div>
+        <div class="hsub">Jasteb Services</div>
+    </div>
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+        <div class="mgrid">
+            <div class="mcard" onclick="go('page-panel')"><div class="micon">🛡️</div><div class="mlabel">Panel Jasteb</div></div>
+            <div class="mcard" onclick="go('page-ress')"><div class="micon">📨</div><div class="mlabel">Ress Jasteb</div></div>
+            <div class="mcard" onclick="go('page-bot')"><div class="micon">🤖</div><div class="mlabel">Sewa Bot Bug</div></div>
+            <div class="mcard" onclick="go('page-nokos')"><div class="micon">📱</div><div class="mlabel">Buy Nokos</div></div>
+            <div class="mcard" onclick="go('page-scrip')"><div class="micon">💻</div><div class="mlabel">Buy Scrip</div></div>
+            <div class="mcard wide" onclick="go('page-chat')"><div class="micon">💬</div><div class="mlabel">Group Chat Buyer</div></div>
+        </div>
+    </div>
+
+    <!-- PANEL JASTEB -->
+    <div class="page" id="page-panel">
+        <button class="bbtn" onclick="go('page-home')">← KEMBALI</button>
+        <div class="stitle">Panel Jasteb Gmail</div><div class="ssub">Pilih paket sesuai kebutuhan</div>
+        <div class="pgrid" id="pg-gmail">
+            <div class="pcard" data-i="Panel Gmail MAX 1 Email" data-p="5000" onclick="sel(this,'pg-gmail')"><div class="pname">Max 1 Email</div><div class="pprice">5.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Panel Gmail MAX 3 Email" data-p="10000" onclick="sel(this,'pg-gmail')"><div class="pname">Max 3 Email</div><div class="pprice">10.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Panel Gmail MAX 5 Email" data-p="15000" onclick="sel(this,'pg-gmail')"><div class="pname">Max 5 Email</div><div class="pprice">15.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Panel Gmail MAX 10 Email" data-p="20000" onclick="sel(this,'pg-gmail')"><div class="pname">Max 10 Email</div><div class="pprice">20.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <div class="stitle">Panel Unlimited</div><div class="ssub">Akses tanpa batas</div>
+        <div class="pgrid" id="pg-unli">
+            <div class="pcard" data-i="1 Panel Jasteb Unlimited" data-p="10000" onclick="sel(this,'pg-unli')"><div class="pname">1 Panel</div><div class="pprice">10.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="2 Panel Jasteb Unlimited" data-p="15000" onclick="sel(this,'pg-unli')"><div class="pname">2 Panel</div><div class="pprice">15.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="3 Panel Jasteb Unlimited" data-p="20000" onclick="sel(this,'pg-unli')"><div class="pname">3 Panel</div><div class="pprice">20.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="4 Panel Jasteb Unlimited" data-p="25000" onclick="sel(this,'pg-unli')"><div class="pname">4 Panel</div><div class="pprice">25.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="5 Panel Jasteb Unlimited" data-p="30000" onclick="sel(this,'pg-unli')"><div class="pname">5 Panel</div><div class="pprice">30.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="6 Panel Jasteb Unlimited" data-p="35000" onclick="sel(this,'pg-unli')"><div class="pname">6 Panel</div><div class="pprice">35.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <button class="obtn" onclick="startOrder('panel')">ORDER SEKARANG</button>
+    </div>
+
+    <!-- RESS JASTEB -->
+    <div class="page" id="page-ress">
+        <button class="bbtn" onclick="go('page-home')">← KEMBALI</button>
+        <div class="igroup"><label class="ilabel">Masukan Email Target</label><input type="email" class="ifield" id="ress-email" placeholder="example@gmail.com"></div>
+        <div class="stitle">Jasteb Biasa</div><div class="ssub">Paket standar</div>
+        <div class="pgrid" id="pg-rb">
+            <div class="pcard" data-i="Jasteb Biasa 20+ Ress" data-p="1000" onclick="sel(this,'pg-rb')"><div class="pname">20+ Ress</div><div class="pprice">1.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Biasa 40+ Ress" data-p="2000" onclick="sel(this,'pg-rb')"><div class="pname">40+ Ress</div><div class="pprice">2.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Biasa 60+ Ress" data-p="3000" onclick="sel(this,'pg-rb')"><div class="pname">60+ Ress</div><div class="pprice">3.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Biasa 80+ Ress" data-p="4000" onclick="sel(this,'pg-rb')"><div class="pname">80+ Ress</div><div class="pprice">4.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Biasa 99+ Ress" data-p="5000" onclick="sel(this,'pg-rb')"><div class="pname">99+ Ress</div><div class="pprice">5.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Biasa 110 Ress" data-p="6000" onclick="sel(this,'pg-rb')"><div class="pname">110 Ress</div><div class="pprice">6.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <div class="stitle">Jasteb Premium</div><div class="ssub">Hasil lebih maksimal</div>
+        <div class="pgrid" id="pg-rp">
+            <div class="pcard" data-i="Jasteb Premium 50+ Ress" data-p="5000" onclick="sel(this,'pg-rp')"><div class="pname">50+ Ress</div><div class="pprice">5.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Premium 99+ Ress" data-p="10000" onclick="sel(this,'pg-rp')"><div class="pname">99+ Ress</div><div class="pprice">10.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Premium 150 Ress" data-p="15000" onclick="sel(this,'pg-rp')"><div class="pname">150 Ress</div><div class="pprice">15.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Jasteb Premium 200 Ress" data-p="20000" onclick="sel(this,'pg-rp')"><div class="pname">200 Ress</div><div class="pprice">20.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <button class="obtn" onclick="startOrder('ress')">ORDER SEKARANG</button>
+    </div>
+
+    <!-- SEWA BOT BUG -->
+    <div class="page" id="page-bot">
+        <button class="bbtn" onclick="go('page-home')">← KEMBALI</button>
+        <div class="igroup"><label class="ilabel">Masukan Link Target</label><input type="url" class="ifield" id="bot-link" placeholder="https://chat.whatsapp.com/xxxxx"></div>
+        <div class="stitle">Harga Per Hari</div>
+        <div class="pgrid" id="pg-bh">
+            <div class="pcard" data-i="Sewa Bot Bug 1 Hari" data-p="4000" onclick="sel(this,'pg-bh')"><div class="pname">1 Hari</div><div class="pprice">4.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 2 Hari" data-p="6000" onclick="sel(this,'pg-bh')"><div class="pname">2 Hari</div><div class="pprice">6.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 3 Hari" data-p="8000" onclick="sel(this,'pg-bh')"><div class="pname">3 Hari</div><div class="pprice">8.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 4 Hari" data-p="11000" onclick="sel(this,'pg-bh')"><div class="pname">4 Hari</div><div class="pprice">11.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 5 Hari" data-p="13000" onclick="sel(this,'pg-bh')"><div class="pname">5 Hari</div><div class="pprice">13.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 6 Hari" data-p="15000" onclick="sel(this,'pg-bh')"><div class="pname">6 Hari</div><div class="pprice">15.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 7 Hari" data-p="18000" onclick="sel(this,'pg-bh')"><div class="pname">7 Hari</div><div class="pprice">18.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 8 Hari" data-p="20000" onclick="sel(this,'pg-bh')"><div class="pname">8 Hari</div><div class="pprice">20.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <div class="stitle">Harga Per Minggu</div>
+        <div class="pgrid" id="pg-bm">
+            <div class="pcard" data-i="Sewa Bot Bug 1 Minggu" data-p="20000" onclick="sel(this,'pg-bm')"><div class="pname">1 Minggu</div><div class="pprice">20.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 2 Minggu" data-p="30000" onclick="sel(this,'pg-bm')"><div class="pname">2 Minggu</div><div class="pprice">30.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 4 Minggu" data-p="35000" onclick="sel(this,'pg-bm')"><div class="pname">4 Minggu</div><div class="pprice">35.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 5 Minggu" data-p="40000" onclick="sel(this,'pg-bm')"><div class="pname">5 Minggu</div><div class="pprice">40.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <div class="stitle">Harga Per Bulan</div>
+        <div class="pgrid" id="pg-bb">
+            <div class="pcard" data-i="Sewa Bot Bug 1 Bulan" data-p="50000" onclick="sel(this,'pg-bb')"><div class="pname">1 Bulan</div><div class="pprice">50.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 2 Bulan" data-p="60000" onclick="sel(this,'pg-bb')"><div class="pname">2 Bulan</div><div class="pprice">60.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 3 Bulan" data-p="70000" onclick="sel(this,'pg-bb')"><div class="pname">3 Bulan</div><div class="pprice">70.000</div><div class="pcur">IDR</div></div>
+            <div class="pcard" data-i="Sewa Bot Bug 4 Bulan" data-p="80000" onclick="sel(this,'pg-bb')"><div class="pname">4 Bulan</div><div class="pprice">80.000</div><div class="pcur">IDR</div></div>
+        </div>
+        <button class="obtn" onclick="startOrder('bot')">ORDER SEKARANG</button>
+    </div>
+
+    <!-- BUY NOKOS -->
+    <div class="page" id="page-nokos">
+        <button class="bbtn" onclick="go('page-home')">← KEMBALI</button>
+        <div class="stitle">Nomor Kosong</div><div class="ssub">Pilih negara nomor kosong</div>
+        <div class="sgrid" id="sg-nk">
+            <div class="scard" data-i="Nokos Indonesia +62" data-p="8000" onclick="selS(this,'sg-nk')"><div class="ninfo"><span class="nflag">🇮🇩</span><div><div class="ncountry">Indonesia</div><div class="ncode">+62</div></div></div><div class="sprice">8.000</div></div>
+            <div class="scard" data-i="Nokos Philipina +63" data-p="8000" onclick="selS(this,'sg-nk')"><div class="ninfo"><span class="nflag">🇵🇭</span><div><div class="ncountry">Philipina</div><div class="ncode">+63</div></div></div><div class="sprice">8.000</div></div>
+            <div class="scard" data-i="Nokos Maleysiya +60" data-p="10000" onclick="selS(this,'sg-nk')"><div class="ninfo"><span class="nflag">🇲🇾</span><div><div class="ncountry">Maleysiya</div><div class="ncode">+60</div></div></div><div class="sprice">10.000</div></div>
+            <div class="scard" data-i="Nokos Brajil +55" data-p="15000" onclick="selS(this,'sg-nk')"><div class="ninfo"><span class="nflag">🇧🇷</span><div><div class="ncountry">Brajil</div><div class="ncode">+55</div></div></div><div class="sprice">15.000</div></div>
+        </div>
+        <button class="obtn" onclick="startOrder('nokos')">ORDER SEKARANG</button>
+    </div>
+
+    <!-- BUY SCRIP -->
+    <div class="page" id="page-scrip">
+        <button class="bbtn" onclick="go('page-home')">← KEMBALI</button>
+        <div class="stitle">List Script</div><div class="ssub">Pilih script yang diinginkan</div>
+        <div class="sgrid" id="sg-sc">
+            <div class="scard" data-i="Vastonax Crash Bug" data-p="5000" onclick="selS(this,'sg-sc')"><div class="sname">Vastonax Crash Bug</div><div class="sprice">5.000</div></div>
+            <div class="scard" data-i="Fantix New Bug" data-p="3000" onclick="selS(this,'sg-sc')"><div class="sname">Fantix New Bug</div><div class="sprice">3.000</div></div>
+            <div class="scard" data-i="Ourin MD WA" data-p="3000" onclick="selS(this,'sg-sc')"><div class="sname">Ourin MD WA</div><div class="sprice">3.000</div></div>
+            <div class="scard" data-i="Kizu V4 Scrip MD X Bug" data-p="10000" onclick="selS(this,'sg-sc')"><div class="sname">Kizu V4 Scrip MD X Bug</div><div class="sprice">10.000</div></div>
+            <div class="scard" data-i="New Axonic V13" data-p="5000" onclick="selS(this,'sg-sc')"><div class="sname">New Axonic V13</div><div class="sprice">5.000</div></div>
+        </div>
+        <button class="obtn" onclick="startOrder('scrip')">ORDER SEKARANG</button>
+    </div>
+
+    <!-- ===== GROUP CHAT ===== -->
+    <div class="chat-page" id="page-chat">
+        <div class="chat-header">
+            <button class="chat-back" onclick="go('page-home')">←</button>
+            <div class="chat-hinfo">
+                <div class="chat-hname">💬 Group Buyer Jasteb</div>
+                <div class="chat-hstatus"><span class="dot"></span> <span id="online-count">Online</span></div>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-empty" id="chat-empty">
+                <div class="chat-empty-icon">💬</div>
+                <div class="chat-empty-text">Belum ada pesan.<br>Jadilah yang pertama ngobrol!</div>
+            </div>
+        </div>
+        <div class="chat-input-bar">
+            <textarea class="chat-input" id="chat-input" placeholder="Ketik pesan..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+            <button class="chat-send" id="chat-send-btn" onclick="sendChatMsg()">➤</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- POPUP VERIFIKASI NOMOR -->
+<div class="pov" id="pop-phone">
+    <div class="pbox">
+        <div class="ptitle">Verifikasi Nomor Anda</div>
+        <div class="igroup"><label class="ilabel">Masukan Nomor WhatsApp</label><input type="tel" class="ifield" id="phone-number" placeholder="08xxxxxxxxxx"></div>
+        <button class="sbtn" onclick="verifyPhone()">LANJUTKAN</button>
+    </div>
+</div>
+
+<!-- POPUP QRIS -->
+<div class="pov" id="pop-pay">
+    <div class="pbox">
+        <div class="ptitle">Pembayaran</div>
+        <img src="https://files.catbox.moe/yjvyp1.jpg" alt="QRIS" class="qimg" onerror="this.style.display='none';document.getElementById('qf').style.display='block'">
+        <div id="qf" style="display:none;text-align:center;padding:30px;color:var(--t3);font-size:12px">⚠️ Gambar QRIS gagal dimuat<br>Gunakan nomor di bawah</div>
+        <div class="pinfo">
+            <div class="prow"><span class="pmeth">DANA</span><span class="pnum" onclick="cp('085885983218')">085885983218 📋</span></div>
+            <div class="prow"><span class="pmeth">GOPAY</span><span class="pnum" onclick="cp('085885983218')">085885983218 📋</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="ilabel">Masukan Bukti Transfer</div>
+        <div class="fup" id="up-area">
+            <input type="file" accept="image/*" class="fup-input" id="bukti-file" onchange="handleFile(event)">
+            <div class="fup-icon">📷</div>
+            <div class="fup-txt">Ketuk untuk <strong>pilih foto</strong></div>
+            <div class="fup-name" id="f-name"></div>
+        </div>
+        <button class="sbtn" id="btn-go" onclick="submitOrder()" style="margin-top:20px">LANJUTKAN</button>
+    </div>
+</div>
+
+<script>
+// ============================
+// NAVIGATION
+// ============================
+function go(id){
+    document.querySelectorAll('.page,.chat-page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('main-header').style.display = id==='page-chat'?'none':'';
+    if(id==='page-chat'){setTimeout(()=>{scrollChat();document.getElementById('chat-input').focus()},100)}
+    else window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============================
+// PRICE SELECTION
+// ============================
+function sel(el,gid){document.getElementById(gid).querySelectorAll('.pcard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel')}
+function selS(el,gid){document.getElementById(gid).querySelectorAll('.scard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel')}
+
+function getSel(type){
+    let gids=[],s='.pcard';
+    if(type==='panel')gids=['pg-gmail','pg-unli'];
+    else if(type==='ress')gids=['pg-rb','pg-rp'];
+    else if(type==='bot')gids=['pg-bh','pg-bm','pg-bb'];
+    else if(type==='nokos'){gids=['sg-nk'];s='.scard'}
+    else if(type==='scrip'){gids=['sg-sc'];s='.scard'}
+    for(let g of gids){const e=document.getElementById(g).querySelector(s+'.sel');if(e)return{i:e.getAttribute('data-i'),p:parseInt(e.getAttribute('data-p'))}}
+    return null;
+}
+
+// ============================
+// ORDER FLOW
+// ============================
+let order={type:'',item:'',price:0,target:'',phone:'',file:'',fname:''};
+
+function startOrder(type){
+    const s=getSel(type);
+    if(!s){toast('Pilih paket dulu!','er');return}
+    let t='';
+    if(type==='ress'){t=document.getElementById('ress-email').value.trim();if(!t){toast('Masukan email target!','er');return}}
+    if(type==='bot'){t=document.getElementById('bot-link').value.trim();if(!t){toast('Masukan link target!','er');return}}
+    order={type,item:s.i,price:s.p,target:t,phone:'',file:'',fname:''};
+    showP('pop-phone');
+}
+
+function showP(id){document.getElementById(id).classList.add('active')}
+function hideP(id){document.getElementById(id).classList.remove('active')}
+function hideAll(){document.querySelectorAll('.pov').forEach(p=>p.classList.remove('active'))}
+
+document.querySelectorAll('.pov').forEach(o=>{o.addEventListener('click',function(e){if(e.target===this&&this.id!=='pop-pay')this.classList.remove('active')})});
+
+function verifyPhone(){
+    const p=document.getElementById('phone-number').value.trim();
+    if(!p){toast('Masukan nomor WA!','er');return}
+    order.phone=p;hideP('pop-phone');
+    setTimeout(()=>showP('pop-pay'),300);
+}
+
+function handleFile(e){
+    const f=e.target.files[0];if(!f)return;
+    if(!f.type.startsWith('image/')){toast('File gambar saja!','er');return}
+    if(f.size>5*1024*1024){toast('Maks 5MB!','er');return}
+    document.getElementById('up-area').classList.add('has');
+    document.getElementById('f-name').textContent='✓ '+f.name;
+    const r=new FileReader();
+    r.onload=function(e){order.file=e.target.result;order.fname=f.name};
+    r.readAsDataURL(f);
+}
+
+function submitOrder(){
+    if(!order.file){toast('Upload bukti transfer!','er');return}
+    const btn=document.getElementById('btn-go');
+    btn.disabled=true;btn.innerHTML='<span class="spinner"></span>MENGIRIM...';
+    const TK='8211732673:AAEEjD2bQmidPORoMJyuYiGKD9f86VtodJE',OID='8480562552';
+    let cap='🛒 ORDER BARU\n━━━━━━━━━━━━━━━━\n📦 Item: '+order.item+'\n💰 Harga: Rp '+order.price.toLocaleString('id-ID')+'\n';
+    if(order.target)cap+='🎯 Target: '+order.target+'\n';
+    cap+='📱 No WA: '+order.phone+'\n⏰ Waktu: '+new Date().toLocaleString('id-ID')+'\n━━━━━━━━━━━━━━━━';
+    fetch('https://api.telegram.org/bot'+TK+'/sendPhoto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:OID,photo:order.file,caption:cap})})
+    .then(r=>r.json()).then(d=>{
+        if(d.ok){hideAll();toast('Order berhasil dikirim! ✅','ok');resetSel();go('page-home')}
+        else{toast('Gagal mengirim!','er')}
+    }).catch(()=>toast('Gagal, coba lagi!','er'))
+    .finally(()=>{btn.disabled=false;btn.innerHTML='LANJUTKAN';document.getElementById('bukti-file').value='';document.getElementById('f-name').textContent='';document.getElementById('up-area').classList.remove('has')});
+}
+
+function resetSel(){document.querySelectorAll('.pcard.sel,.scard.sel').forEach(c=>c.classList.remove('sel'));['ress-email','bot-link','phone-number'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
+function cp(t){navigator.clipboard.writeText(t).then(()=>toast('Disalin! 📋','inf')).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('Disalin! 📋','inf')}}
+
+// ============================
+// TOAST
+// ============================
+function toast(m,t){
+    const el=document.getElementById('toast'),ic=el.querySelector('.ti');
+    el.className='toast '+t;
+    ic.textContent=t==='ok'?'✅':t==='er'?'❌':'ℹ️';
+    el.querySelector('.tm').textContent=m;
+    el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ============================================================
+// GROUP CHAT SYSTEM (BroadcastChannel + localStorage)
+// ============================================================
+const CHAT_KEY = 'jasteb_chat_msgs';
+const CHAT_BC = new BroadcastChannel('jasteb_chat_channel');
+const NAMES = ['Anon','User','Buyer','Member','Orang','Teman','Siswa','Bro','Sist','Kawan','Jagoan','Pemain','Legend','Pro','Master','Boss','Raja','Dewa','Star','VIP'];
+const COLORS = ['#f87171','#fb923c','#fbbf24','#34d399','#22d3ee','#818cf8','#c084fc','#f472b6','#a78bfa','#38bdf8','#4ade80','#facc15'];
+
+let myId = localStorage.getItem('jasteb_chat_id');
+let myName = localStorage.getItem('jasteb_chat_name');
+let myColor = localStorage.getItem('jasteb_chat_color');
+
+if (!myId) {
+    myId = 'u_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    myName = NAMES[Math.floor(Math.random() * NAMES.length)] + Math.floor(Math.random() * 999);
+    myColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+    localStorage.setItem('jasteb_chat_id', myId);
+    localStorage.setItem('jasteb_chat_name', myName);
+    localStorage.setItem('jasteb_chat_color', myColor);
+}
+
+function getMessages() {
+    try { return JSON.parse(localStorage.getItem(CHAT_KEY)) || []; }
+    catch { return []; }
+}
+
+function saveMessages(msgs) {
+    // Simpan maks 200 pesan terakhir
+    if (msgs.length > 200) msgs = msgs.slice(-200);
+    localStorage.setItem(CHAT_KEY, JSON.stringify(msgs));
+}
+
+function renderMessages() {
+    const body = document.getElementById('chat-body');
+    const empty = document.getElementById('chat-empty');
+    const msgs = getMessages();
+
+    if (msgs.length === 0) {
+        if (empty) empty.style.display = 'flex';
+        return;
+    }
+
+    if (empty) empty.style.display = 'none';
+
+    // Hapus pesan lama kecuali empty state
+    body.querySelectorAll('.chat-msg, .chat-sys').forEach(e => e.remove());
+
+    msgs.forEach(m => {
+        const div = document.createElement('div');
+
+        if (m.type === 'sys') {
+            div.className = 'chat-sys';
+            div.textContent = m.text;
+        } else {
+            const isMe = m.uid === myId;
+            div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
+            
+            let html = '';
+            if (!isMe) {
+                html += '<div class="msg-name" style="color:' + (m.color || '#818cf8') + '">' + escHtml(m.name) + '</div>';
+            }
+            html += '<div>' + escHtml(m.text).replace(/\n/g, '<br>') + '</div>';
+            html += '<div class="msg-time">' + formatTime(m.ts) + '</div>';
+            div.innerHTML = html;
+        }
+
+        body.appendChild(div);
+    });
+
+    scrollChat();
+}
+
+function addMessage(text) {
+    const msgs = getMessages();
+    msgs.push({
+        type: 'msg',
+        uid: myId,
+        name: myName,
+        color: myColor,
+        text: text.trim(),
+        ts: Date.now()
+    });
+    saveMessages(msgs);
+    renderMessages();
+
+    // Broadcast ke tab lain
+    CHAT_BC.postMessage({ action: 'new_msg' });
+}
+
+function addSystemMsg(text) {
+    const msgs = getMessages();
+    msgs.push({ type: 'sys', text: text, ts: Date.now() });
+    saveMessages(msgs);
+    renderMessages();
+    CHAT_BC.postMessage({ action: 'new_msg' });
+}
+
+function sendChatMsg() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text);
+    input.value = '';
+    input.style.height = 'auto';
+    input.focus();
+}
+
+function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMsg();
+    }
+}
+
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function scrollChat() {
+    const body = document.getElementById('chat-body');
+    setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
+}
+
+function formatTime(ts) {
+    const d = new Date(ts);
+    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+}
+
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+// Dengarkan broadcast dari tab lain
+CHAT_BC.onmessage = function(e) {
+    if (e.data.action === 'new_msg') {
+        renderMessages();
+    }
+};
+
+// Render pesan saat buka chat
+renderMessages();
+
+// Kirim pesan join saat pertama kali buka (hanya sekali per session)
+if (!sessionStorage.getItem('jasteb_chat_joined')) {
+    sessionStorage.setItem('jasteb_chat_joined', '1');
+    setTimeout(() => {
+        addSystemMsg(myName + ' bergabung ke grup');
+    }, 500);
+}
+
+// Update online count (simulasi dari jumlah id unik di pesan terakhir)
+function updateOnline() {
+    const msgs = getMessages();
+    const recent = msgs.filter(m => m.ts > Date.now() - 300000); // 5 menit terakhir
+    const uids = new Set(recent.map(m => m.uid));
+    uids.add(myId); // pastikan kita sendiri kehitung
+    const count = uids.size;
+    document.getElementById('online-count').textContent = count + ' orang online';
+}
+updateOnline();
+setInterval(updateOnline, 10000);
+</script>
+
+</body>
+</html>
