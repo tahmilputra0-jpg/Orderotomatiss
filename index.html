@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Ress Gacor - hayuka hosting</title>
+    <title>Toko Ress Gacor - Order Produk Keren</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -332,7 +332,6 @@
             transform: scale(1) translateY(0);
         }
 
-        /* Efek dekorasi di atas popup */
         .popup-box::before {
             content: '';
             position: absolute;
@@ -435,9 +434,56 @@
             color: white;
             transform: rotate(90deg);
         }
+
+        /* ===== TOMBOL MUSIK FLOATING ===== */
+        .music-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.5);
+            z-index: 1500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.playing {
+            animation: none;
+            background: linear-gradient(135deg, #ff4d4d, #cc0000);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(17, 153, 142, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(17, 153, 142, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(17, 153, 142, 0); }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ===== AUDIO MUSIC ===== -->
+    <audio id="bgMusic" loop preload="auto">
+        <!-- Menggunakan lagu dari server yang mengizinkan streaming -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ===== TOMBOL MUSIK FLOATING ===== -->
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
 
     <!-- ===== POP UP KEREN ===== -->
     <div class="popup-overlay" id="popupOverlay">
@@ -501,7 +547,6 @@
                 <div class="section-title">Pembayaran QRIS</div>
                 
                 <div class="qris-box">
-                    <!-- Gambar QRIS -->
                     <img src="https://files.catbox.moe/8nuli0.jpg" alt="QRIS Toko Ress Gacor">
                     <p>Scan QRIS di atas untuk melakukan pembayaran</p>
                 </div>
@@ -546,8 +591,11 @@
         ];
 
         let selectedProduct = null;
+        let isMusicPlaying = false;
+        const music = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
 
-        // Render Produk ke HTML
+        // Render Produk
         const productGrid = document.getElementById('productGrid');
         products.forEach((prod, index) => {
             const card = document.createElement('div');
@@ -560,19 +608,58 @@
             productGrid.appendChild(card);
         });
 
-        // ===== FUNGSI POP UP =====
-        // Tampilkan popup saat halaman selesai dimuat
+        // ===== POP UP =====
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('popupOverlay').classList.add('active');
-            }, 800); // Muncul setelah 0.8 detik
+            }, 1500); // Muncul setelah 1.5 detik
         });
 
         function tutupPopup() {
             document.getElementById('popupOverlay').classList.remove('active');
         }
 
-        // Fungsi Pilih Produk (Pindah ke Halaman 2)
+        // ===== FUNGSI MUSIC =====
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                music.pause();
+                musicBtn.classList.remove('playing');
+                musicBtn.innerHTML = '🎵';
+                isMusicPlaying = false;
+            } else {
+                music.volume = 0.5;
+                music.play().then(() => {
+                    musicBtn.classList.add('playing');
+                    musicBtn.innerHTML = '🔇';
+                    isMusicPlaying = true;
+                }).catch(err => {
+                    console.log("Gagal memutar musik:", err);
+                    showToast('Musik tidak dapat diputar otomatis. Klik tombol lagi.');
+                });
+            }
+        }
+
+        // Auto-play saat interaksi pertama (biar musik langsung bunyi)
+        function autoPlayMusic() {
+            if (!isMusicPlaying) {
+                music.volume = 0.5;
+                music.play().then(() => {
+                    musicBtn.classList.add('playing');
+                    musicBtn.innerHTML = '🔇';
+                    isMusicPlaying = true;
+                    // Hapus event listener setelah berhasil
+                    document.body.removeEventListener('click', autoPlayMusic);
+                    document.body.removeEventListener('touchstart', autoPlayMusic);
+                }).catch(err => {
+                    console.log("Auto-play gagal, user harus klik tombol musik.");
+                });
+            }
+        }
+
+        document.body.addEventListener('click', autoPlayMusic, { once: true });
+        document.body.addEventListener('touchstart', autoPlayMusic, { once: true });
+
+        // ===== LOGIKA PEMESANAN =====
         function selectProduct(index, element) {
             document.querySelectorAll('.product-card').forEach(card => {
                 card.classList.remove('selected');
@@ -584,7 +671,6 @@
             pindahHalaman('page2');
         }
 
-        // Fungsi Update Ringkasan Pesanan
         function updateSummary() {
             if (!selectedProduct) return;
             
@@ -613,7 +699,6 @@
             `;
         }
 
-        // Fungsi Pindah Halaman
         function pindahHalaman(pageId) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
@@ -630,7 +715,6 @@
             pindahHalaman('page2');
         }
 
-        // Fungsi Tombol "Buat Pesanan" (Pindah ke Halaman 3)
         function prosesPesanan() {
             const email = document.getElementById('buyerEmail').value.trim();
             const name = document.getElementById('buyerName').value.trim();
@@ -648,7 +732,6 @@
             pindahHalaman('page3');
         }
 
-        // Fungsi Konfirmasi ke WhatsApp
         function konfirmasiWA() {
             const email = document.getElementById('buyerEmail').value.trim();
             const name = document.getElementById('buyerName').value.trim();
@@ -665,7 +748,6 @@
             window.open(urlWA, '_blank');
         }
 
-        // Fungsi Notifikasi Toast
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
