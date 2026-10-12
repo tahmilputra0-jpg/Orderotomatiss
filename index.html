@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Ress Gacor - Order Produk Keren</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Produk Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card.selected {
+            border-color: #11998e;
+            background-color: #f0fdf4;
+        }
+
+        .product-card .qty {
+            font-size: 20px;
+            font-weight: 700;
+            color: #11998e;
+        }
+
+        .product-card .price {
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Bagian Checkout (Form) */
+        .checkout-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: none; /* Sembunyikan awalnya */
+        }
+
+        .checkout-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .form-group label span {
+            color: red;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #11998e;
+        }
+
+        /* Ringkasan Pesanan */
+        .order-summary {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 16px;
+            color: #333;
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+
+        .summary-row.total .price-total {
+            color: #11998e;
+        }
+
+        /* Tombol */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            box-shadow: 0 4px 10px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 15px rgba(17, 153, 142, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-wa {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            margin-top: 15px;
+        }
+
+        .btn-wa:hover {
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Bagian QRIS */
+        .qris-section {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .qris-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .qris-box {
+            background: #fff;
+            border: 2px dashed #11998e;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .qris-box img {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+
+        .qris-box p {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .instruction {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        /* Notifikasi Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Toko Ress Gacor</h1>
+        <p>Order Produk Keren & Anti Ampas</p>
+    </header>
+
+    <div class="container">
+        <!-- Daftar Produk -->
+        <div class="section-title">Pilih Paket RESS</div>
+        <div class="product-grid" id="productGrid">
+            <!-- Produk akan di-generate oleh JavaScript -->
+        </div>
+
+        <!-- Form Checkout -->
+        <div class="checkout-section" id="checkoutSection">
+            <div class="section-title">Informasi Pembeli</div>
+            
+            <div class="form-group">
+                <label>Email <span>*</span></label>
+                <input type="email" id="buyerEmail" placeholder="Masukkan Email Aktif" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Nama <span>*</span></label>
+                <input type="text" id="buyerName" placeholder="Masukkan Nama Anda" required>
+            </div>
+
+            <div class="section-title" style="margin-top: 25px;">Detail Pesanan</div>
+            <div class="order-summary" id="orderSummary">
+                <!-- Ringkasan akan diisi JS -->
+            </div>
+
+            <button class="btn btn-primary" id="btnBuatPesanan" onclick="prosesPesanan()">Buat Pesanan</button>
+
+            <!-- Bagian QRIS (Muncul setelah klik Buat Pesanan) -->
+            <div class="qris-section" id="qrisSection">
+                <div class="qris-box">
+                    <!-- Gambar QRIS yang sudah diupdate -->
+                    <img src="https://files.catbox.moe/8nuli0.jpg" alt="QRIS Toko Ress Gacor">
+                    <p>Scan QRIS untuk melakukan pembayaran</p>
+                </div>
+                <p class="instruction">Setelah melakukan pembayaran, silakan klik tombol di bawah ini untuk konfirmasi ke WhatsApp Admin.</p>
+                <button class="btn btn-wa" onclick="konfirmasiWA()">Konfirmasi Order via WA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifikasi -->
+    <div class="toast" id="toast">Pilih produk terlebih dahulu!</div>
+
+    <script>
+        // Data Produk
+        const products = [
+            { qty: '10RESS', price: 1000 },
+            { qty: '20RESS', price: 2000 },
+            { qty: '30RESS', price: 3000 },
+            { qty: '40RESS', price: 4000 },
+            { qty: '50RESS', price: 5000 },
+            { qty: '60RESS', price: 6000 },
+            { qty: '70RESS', price: 7000 },
+            { qty: '80RESS', price: 8000 },
+            { qty: '90RESS', price: 9000 },
+            { qty: '100RESS', price: 10000 },
+            { qty: '110RESS', price: 11000 },
+            { qty: '120RESS', price: 12000 },
+            { qty: '130RESS', price: 13000 },
+            { qty: '140RESS', price: 14000 },
+            { qty: '150RESS', price: 15000 },
+            { qty: '160RESS', price: 16000 },
+            { qty: '170RESS', price: 17000 },
+            { qty: '180RESS', price: 18000 },
+            { qty: '190RESS', price: 19000 },
+            { qty: '200RESS', price: 20000 }
+        ];
+
+        let selectedProduct = null;
+
+        // Render Produk ke HTML
+        const productGrid = document.getElementById('productGrid');
+        products.forEach((prod, index) => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="qty">${prod.qty}</div>
+                <div class="price">Rp ${prod.price.toLocaleString('id-ID')}</div>
+            `;
+            card.onclick = () => selectProduct(index, card);
+            productGrid.appendChild(card);
+        });
+
+        // Fungsi Pilih Produk
+        function selectProduct(index, element) {
+            // Hapus class selected dari semua card
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Tambah class selected ke card yang diklik
+            element.classList.add('selected');
+            
+            // Simpan data produk yang dipilih
+            selectedProduct = products[index];
+            
+            // Tampilkan form checkout
+            document.getElementById('checkoutSection').classList.add('active');
+            
+            // Sembunyikan QRIS (jika sebelumnya sudah muncul)
+            document.getElementById('qrisSection').classList.remove('active');
+            
+            // Update Ringkasan Pesanan
+            updateSummary();
+            
+            // Scroll ke form checkout
+            document.getElementById('checkoutSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Update Ringkasan Pesanan
+        function updateSummary() {
+            if (!selectedProduct) return;
+            
+            const summary = document.getElementById('orderSummary');
+            summary.innerHTML = `
+                <div class="summary-row">
+                    <span>Produk</span>
+                    <span>${selectedProduct.qty}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Harga</span>
+                    <span>Rp ${selectedProduct.price.toLocaleString('id-ID')}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Diskon</span>
+                    <span style="color: #11998e;">- Rp 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Biaya Layanan</span>
+                    <span>Rp 0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>TOTAL</span>
+                    <span class="price-total">Rp ${selectedProduct.price.toLocaleString('id-ID')}</span>
+                </div>
+            `;
+        }
+
+        // Fungsi Tombol "Buat Pesanan"
+        function prosesPesanan() {
+            const email = document.getElementById('buyerEmail').value.trim();
+            const name = document.getElementById('buyerName').value.trim();
+
+            // Validasi input
+            if (!email || !name) {
+                showToast('Mohon isi Email dan Nama Anda!');
+                return;
+            }
+
+            // Validasi format email sederhana
+            if (!email.includes('@') || !email.includes('.')) {
+                showToast('Mohon masukkan Email yang valid!');
+                return;
+            }
+
+            // Tampilkan QRIS
+            document.getElementById('qrisSection').classList.add('active');
+            
+            // Scroll ke QRIS
+            document.getElementById('qrisSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Fungsi Konfirmasi ke WhatsApp
+        function konfirmasiWA() {
+            const email = document.getElementById('buyerEmail').value.trim();
+            const name = document.getElementById('buyerName').value.trim();
+            
+            if (!selectedProduct) {
+                showToast('Silakan pilih produk terlebih dahulu!');
+                return;
+            }
+
+            // Nomor WA Tujuan (Format Internasional tanpa +)
+            const nomorWA = '6285722504406';
+
+            // Susun Pesan
+            const pesan = `Halo Admin Toko Ress Gacor,%0A%0ASaya ingin konfirmasi pesanan saya:%0A%0A*Detail Pembeli:*%0ANama: ${name}%0AEmail: ${email}%0A%0A*Detail Pesanan:*%0AProduk: ${selectedProduct.qty}%0AHarga: Rp ${selectedProduct.price.toLocaleString('id-ID')}%0A%0AMohon segera diproses ya. Terima kasih!`;
+
+            // Buka WhatsApp
+            const urlWA = `https://wa.me/${nomorWA}?text=${pesan}`;
+            window.open(urlWA, '_blank');
+        }
+
+        // Fungsi Notifikasi Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
