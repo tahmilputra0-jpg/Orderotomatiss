@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Ress Gacor</title>
+    <title>Toko Ress Gacor - Order Produk Keren</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -53,12 +53,12 @@
 
         /* Halaman (Step) */
         .page {
-            display: none; /* Sembunyikan semua halaman secara default */
+            display: none; 
             padding-bottom: 40px;
         }
 
         .page.active {
-            display: block; /* Tampilkan hanya halaman yang aktif */
+            display: block; 
             animation: slideUp 0.4s ease;
         }
 
@@ -289,9 +289,170 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        /* ===== POP UP KEREN ===== */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-box {
+            background: white;
+            border-radius: 25px;
+            padding: 30px 25px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popup-overlay.active .popup-box {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Efek dekorasi di atas popup */
+        .popup-box::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .popup-box::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            right: -60px;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .popup-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            display: block;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-8px); }
+        }
+
+        .popup-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .popup-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: #11998e;
+            margin-bottom: 15px;
+        }
+
+        .popup-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .popup-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            display: inline-block;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f1f1;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            color: #777;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+
+        .popup-close:hover {
+            background: #ff4d4d;
+            color: white;
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
+
+    <!-- ===== POP UP KEREN ===== -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-box">
+            <button class="popup-close" onclick="tutupPopup()">✕</button>
+            <span class="popup-icon">🚀</span>
+            <div class="popup-title">LADANG JASTEB</div>
+            <div class="popup-subtitle">Grup Resmi Toko Ress Gacor</div>
+            <p class="popup-desc">
+                Yuk Join ke Grup Kami!<br>
+                Nanti ada <b>Riwayat Pembelian Kamu</b> kaya gitu loh. Jangan sampai ketinggalan info promo & stok terbaru!
+            </p>
+            <a href="https://whatsapp.com/channel/0029Vb8iWMrFMqrWqaKIg92v" target="_blank" class="popup-btn">Join Sekarang</a>
+        </div>
+    </div>
 
     <!-- Header -->
     <header>
@@ -399,21 +560,27 @@
             productGrid.appendChild(card);
         });
 
+        // ===== FUNGSI POP UP =====
+        // Tampilkan popup saat halaman selesai dimuat
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('popupOverlay').classList.add('active');
+            }, 800); // Muncul setelah 0.8 detik
+        });
+
+        function tutupPopup() {
+            document.getElementById('popupOverlay').classList.remove('active');
+        }
+
         // Fungsi Pilih Produk (Pindah ke Halaman 2)
         function selectProduct(index, element) {
-            // Highlight produk yang dipilih
             document.querySelectorAll('.product-card').forEach(card => {
                 card.classList.remove('selected');
             });
             element.classList.add('selected');
             
-            // Simpan data produk
             selectedProduct = products[index];
-            
-            // Update Ringkasan Pesanan
             updateSummary();
-            
-            // Pindah Halaman ke Form (Page 2)
             pindahHalaman('page2');
         }
 
@@ -448,24 +615,17 @@
 
         // Fungsi Pindah Halaman
         function pindahHalaman(pageId) {
-            // Sembunyikan semua halaman
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
-            
-            // Tampilkan halaman yang dituju
             document.getElementById(pageId).classList.add('active');
-            
-            // Scroll ke atas dengan smooth
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Fungsi Kembali ke Halaman 1
         function kembaliKeProduk() {
             pindahHalaman('page1');
         }
 
-        // Fungsi Kembali ke Halaman 2
         function kembaliKeForm() {
             pindahHalaman('page2');
         }
@@ -475,19 +635,16 @@
             const email = document.getElementById('buyerEmail').value.trim();
             const name = document.getElementById('buyerName').value.trim();
 
-            // Validasi input
             if (!email || !name) {
                 showToast('Mohon isi Email dan Nama Anda!');
                 return;
             }
 
-            // Validasi format email sederhana
             if (!email.includes('@') || !email.includes('.')) {
                 showToast('Mohon masukkan Email yang valid!');
                 return;
             }
 
-            // Pindah ke Halaman QRIS (Page 3)
             pindahHalaman('page3');
         }
 
@@ -501,13 +658,9 @@
                 return;
             }
 
-            // Nomor WA Tujuan
             const nomorWA = '6285722504406';
-
-            // Susun Pesan
             const pesan = `Halo Admin Toko Ress Gacor,%0A%0ASaya ingin konfirmasi pesanan saya:%0A%0A*Detail Pembeli:*%0ANama: ${name}%0AEmail: ${email}%0A%0A*Detail Pesanan:*%0AProduk: ${selectedProduct.qty}%0AHarga: Rp ${selectedProduct.price.toLocaleString('id-ID')}%0A%0AMohon segera diproses ya. Terima kasih!`;
 
-            // Buka WhatsApp
             const urlWA = `https://wa.me/${nomorWA}?text=${pesan}`;
             window.open(urlWA, '_blank');
         }
